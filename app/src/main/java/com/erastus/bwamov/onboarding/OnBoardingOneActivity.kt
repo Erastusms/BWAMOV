@@ -9,6 +9,10 @@ import com.erastus.bwamov.sign.signin.SignInActivity
 import com.erastus.bwamov.utils.Preferences
 import kotlinx.android.synthetic.main.activity_on_boarding_one.*
 
+
+/*
+    ini adalah halaman yang pertama kali dijalankan
+ */
 class OnBoardingOneActivity : AppCompatActivity() {
 
     lateinit var preferences : Preferences
