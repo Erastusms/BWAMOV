@@ -29,5 +29,13 @@ Kelas Full-Stack Android Developer dari website BuildWithAngga
 ![signup](https://user-images.githubusercontent.com/48922439/110228976-39d3a580-7f38-11eb-8d3a-ceb1a77e810f.png)
 
 4. Halaman Dashboard
+
+![Dashboard](https://user-images.githubusercontent.com/48922439/110229120-aef3aa80-7f39-11eb-9c31-b60d282d1375.png)
+
 5. Halaman Todays Movie
+
+![TodaysMovie](https://user-images.githubusercontent.com/48922439/110229123-b1560480-7f39-11eb-8fcb-79ec7d18a2d3.png)
+
 6. Halaman Setting
+
+![Setting](https://user-images.githubusercontent.com/48922439/110229121-b0bd6e00-7f39-11eb-8e4d-f344e01ce9b2.png)
