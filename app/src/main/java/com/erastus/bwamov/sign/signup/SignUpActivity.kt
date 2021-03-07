@@ -17,9 +17,9 @@ class SignUpActivity : AppCompatActivity() {
     lateinit var sNama : String
     lateinit var sEmail : String
 
-    lateinit var mFirebaseInstance : FirebaseDatabase
-    lateinit var mDatabase: DatabaseReference
-    lateinit var mDatabaseReference: DatabaseReference
+    private lateinit var mFirebaseDatabase: DatabaseReference
+    private lateinit var mFirebaseInstance: FirebaseDatabase
+    private lateinit var mDatabase: DatabaseReference
 
     private lateinit var preferences: Preferences
 
@@ -27,9 +27,11 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
+        val url = "https://www.cellmark.co.uk/media/1526/anonymous-avatar-icon-25.jpg"
+        val saldo = "0"
         mFirebaseInstance = FirebaseDatabase.getInstance()
         mDatabase = FirebaseDatabase.getInstance().getReference()
-        mDatabaseReference = mFirebaseInstance.getReference("User")
+        mFirebaseDatabase = mFirebaseInstance.getReference("User")
 
         preferences = Preferences(this)
 
@@ -52,7 +54,7 @@ class SignUpActivity : AppCompatActivity() {
                 et_email.error = "Silahkan isi email anda"
                 et_email.requestFocus()
             } else {
-                saveUsername(sUsername, sPassword, sNama, sEmail, "0", "https://www.cellmark.co.uk/media/1526/anonymous-avatar-icon-25.jpg")
+                saveUsername(sUsername, sPassword, sNama, sEmail, saldo, url)
             }
         }
     }
@@ -72,15 +74,22 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun checkingUsername(iUsername: String, data: User) {
-        mDatabaseReference.child(iUsername).addListenerForSingleValueEvent(object : ValueEventListener {
+        mFirebaseDatabase.child(iUsername).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
 
                 if (user == null) {
-                    mDatabaseReference.child(iUsername).setValue(data)
+                    mFirebaseDatabase.child(iUsername).setValue(data)
+
+                    preferences.setValue("nama", data.nama.toString())
+                    preferences.setValue("user", data.username.toString())
+                    preferences.setValue("saldo", data.saldo.toString())
+                    preferences.setValue("url", data.url.toString())
+                    preferences.setValue("email", data.email.toString())
+                    preferences.setValue("status", "1")
 
                     val goSignUpPhotoScreen = Intent(this@SignUpActivity,
-                        SignUpPhotoScreenActivity::class.java).putExtra("nama", data.nama)
+                        SignUpPhotoScreenActivity::class.java).putExtra("data", data)
                     startActivity(goSignUpPhotoScreen)
 
                     Toast.makeText(this@SignUpActivity, "User berhasil dibuat", Toast.LENGTH_LONG).show()

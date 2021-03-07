@@ -1,15 +1,12 @@
 package com.erastus.bwamov.sign.signup
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -18,10 +15,10 @@ import com.erastus.bwamov.home.HomeActivity
 import com.erastus.bwamov.R
 import com.erastus.bwamov.sign.signin.User
 import com.erastus.bwamov.utils.Preferences
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
@@ -33,7 +30,6 @@ import java.util.*
 
 class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
 
-    val REQUEST_IMAGE_CAPTURE = 1
     var statusAdd:Boolean = false
     lateinit var filePath: Uri
 
@@ -56,8 +52,8 @@ class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
         mFirebaseInstance = FirebaseDatabase.getInstance()
         mFirebaseDatabase = mFirebaseInstance.getReference("User")
 
-//        user = intent.getParcelableExtra("data")
-        tv_hello.text = "Selamat Datang\n"+intent.getStringExtra("nama")
+        user = intent.getParcelableExtra("data")
+        tv_hello.text = "Selamat Datang\n"+ user.nama
 
         iv_add.setOnClickListener {
             if (statusAdd) {
@@ -66,10 +62,9 @@ class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
                 iv_add.setImageResource(R.drawable.ic_btn_upload)
                 iv_profile.setImageResource(R.drawable.circle_pic)
             } else {
-                Dexter.withActivity(this)
-                    .withPermission(Manifest.permission.CAMERA)
-                    .withListener(this)
-                    .check()
+                ImagePicker.with(this)
+                        .cameraOnly()
+                        .start()
             }
         }
 
@@ -82,18 +77,18 @@ class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
 
         btn_save.setOnClickListener {
             if (filePath != null) {
-                var progressDialog = ProgressDialog(this)
+                val progressDialog = ProgressDialog(this)
                 progressDialog.setTitle("Uploading.....")
                 progressDialog.show()
 
-                var ref = storageReference.child("images/"+ UUID.randomUUID().toString())
+                val ref = storageReference.child("images/"+ UUID.randomUUID().toString())
                 ref.putFile(filePath)
                     .addOnSuccessListener {
                         progressDialog.dismiss()
                         Toast.makeText(this, "Uploaded", Toast.LENGTH_LONG).show()
 
                         ref.downloadUrl.addOnSuccessListener {
-                            preferences.setValue("url", it.toString())
+                            saveToFirebase(it.toString())
                         }
                         finishAffinity()
 
@@ -125,11 +120,12 @@ class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
 
                 preferences.setValue("nama", user.nama.toString())
                 preferences.setValue("user", user.username.toString())
-                preferences.setValue("saldo", "")
-                preferences.setValue("url", "")
+                preferences.setValue("url", url)
+                preferences.setValue("saldo", user.saldo.toString())
                 preferences.setValue("email", user.email.toString())
                 preferences.setValue("status", "1")
-                preferences.setValue("url", url)
+
+
 
                 finishAffinity()
                 val intent = Intent(this@SignUpPhotoScreenActivity,
@@ -145,12 +141,16 @@ class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
     }
 
     override fun onPermissionGranted(response: PermissionGrantedResponse?) {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
-            takePictureIntent ->
-            takePictureIntent.resolveActivity(packageManager)?.also {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-            }
-        }
+ //       Intent(MediaStore.ACTION_IMAGE_CAPTURE).also {
+ //           takePictureIntent ->
+ //           takePictureIntent.resolveActivity(packageManager)?.also {
+ //               startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+ //           }
+ //       }
+
+        ImagePicker.with(this)
+            .cameraOnly()	//User can only capture image using Camera
+            .start()
     }
 
     override fun onPermissionDenied(response: PermissionDeniedResponse?) {
@@ -170,18 +170,22 @@ class SignUpPhotoScreenActivity : AppCompatActivity(), PermissionListener {
 
     @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            var bitmap = data?.extras?.get("data") as Bitmap
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            filePath = data?.data!!
             statusAdd = true
 
-            filePath = data.getData()!!
             Glide.with(this)
-                .load(bitmap)
+                .load(filePath)
                 .apply(RequestOptions.circleCropTransform())
                 .into(iv_profile)
 
             btn_save.visibility = View.VISIBLE
             iv_add.setImageResource(R.drawable.ic_btn_delete)
+        } else if (resultCode == ImagePicker.RESULT_ERROR) {
+            Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
         }
     }
 }

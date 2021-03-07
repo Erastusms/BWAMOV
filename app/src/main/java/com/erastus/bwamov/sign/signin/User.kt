@@ -1,10 +1,14 @@
 package com.erastus.bwamov.sign.signin
 
-class User {
-    var email:String ?=""
-    var nama:String ?=""
-    var password:String ?=""
-    var url:String ?=""
-    var username:String ?=""
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+class User (
+    var email:String ?="",
+    var nama:String ?="",
+    var password:String ?="",
+    var url:String ?="",
+    var username:String ?="",
     var saldo:String ?=""
-}
+) : Parcelable
