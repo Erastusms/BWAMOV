@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "412315325164",
+    "firebase_url": "https://bwamov-7a3ef-default-rtdb.firebaseio.com",
+    "project_id": "bwamov-7a3ef",
+    "storage_bucket": "bwamov-7a3ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:412315325164:android:96d9a7b272983a3152cbc9",
+        "android_client_info": {
+          "package_name": "com.erastus.bwamov"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "412315325164-63aijn96uie9gdud7vjk00bg2v601ssn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6CiIxzPIQlj-D6fpcuxOHGrlvTdvjmKQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "412315325164-63aijn96uie9gdud7vjk00bg2v601ssn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
